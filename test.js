@@ -66,6 +66,7 @@ test(`${select({
   user: {
     id: 'user.id',
     username: 'user.username',
+    foo: undefined,
   },
 })}
 from article

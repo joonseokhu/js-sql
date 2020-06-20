@@ -41,6 +41,7 @@ const sanitizeValue = (value) => {
     case 'boolean': return value ? 'true' : 'false';
     case 'number': return value.toString();
     case 'object': return (value === null) ? 'null' : sanitizeObj(value);
+    case 'undefined': return 'null'
     default: return ''
   }
 }
@@ -63,17 +64,24 @@ const insert = (table, obj) => {
 
 const select = (obj) => {
   const ret = []
-  const formatSelects = (obj, root = []) => Object.entries(obj).map(([key, value]) => {
-    const keys = [...root, key]
-    if (typeof value === 'string') {
-      return ret.push(`${value} as '${keys.join('.')}'`)
-    }
-    if (typeof value === 'object') return formatSelects(value, keys)
-  })
+  const formatSelects = (obj, root = []) => {
+    Object.entries(obj).forEach(([key, value]) => {
+      const keys = [...root, key]
+      const type = typeof value;
+      if (typeof value === 'object' && value !== null) {
+        return formatSelects(value, keys)
+      }
+      if (type === 'string') {
+        return ret.push(`${value} as '${keys.join('.')}'`)
+      }
+      return ret.push(`${sanitizeValue(value)} as '${keys.join('.')}'`)
+    })
+  }
 
   formatSelects(obj)
 
   console.log(ret)
+  
   // const selects = Object.entries(obj).map(([key, value]) => {
   //   if (typeof value === 'string') return `${value} as '${key}'`
   //   if (typeof value === 'object') {
@@ -90,8 +98,7 @@ const select = (obj) => {
 
 const formatResult = (rows) => rows.map((row) => {
   const ret = {}
-  for(const el of Object.entries(row)) {
-    const [key, value] = el
+  for(const [key, value] of Object.entries(row)) {
     const keys = key.split('.')
     setKey(ret, keys, value)
   }
