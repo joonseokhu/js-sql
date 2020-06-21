@@ -1,60 +1,16 @@
 const mysql = require('mysql2/promise')
 
-const pipe = (...fns) => (
-  (value) => (
-    fns.reduce((prev, fn) => fn(prev), value)
-  )
-)
+const { pipe } = require('./utils/pipe')
+const setKey = require('./utils/setKey')
+const toValue = require('./value')
 
-const setKey = (root, keys, value) => {
-  let node = root
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i]
-    const isLeaf = (i === (keys.length - 1))
-    const hasKey = Object.prototype.hasOwnProperty.call(node, key)
-    if (isLeaf) {
-      node[key] = value
-      break
-    }
-    if (!hasKey) {
-      node[key] = {}
-    }
-    node = node[key]
-  }
-}
-
-const sanitizeStr = pipe(
-  e => e.replace(/\\/g, '\\\\'),
-  e => e.replace(/'/g, '\\\''),
-  e => e.replace(/"/g, '\\\"'),
-  e => `'${e}'`,
-)
-
-const sanitizeObj = pipe(
-  e => JSON.stringify(e),
-  sanitizeStr,
-)
-
-const sanitizeValue = (value) => {
-  switch (typeof value) {
-    case 'string': return sanitizeStr(value);
-    case 'boolean': return value ? 'true' : 'false';
-    case 'number': return value.toString();
-    case 'object': return (value === null) ? 'null' : sanitizeObj(value);
-    case 'undefined': return 'null'
-    default: return ''
-  }
-}
-
-const insert = (table, obj) => {
+const insert = (table, input) => {
   const keys = [];
   const values = [];
-  const pairs = Object.entries(obj)
-  for (const pair of Object.entries(obj)) {
-    const [key, value] = pair
+  Object.entries(input).forEach(([key, value]) => {
     keys.push(key)
-    values.push(sanitizeValue(value))
-  }
+    values.push(toValue(value))
+  })
   return `insert into ${table} (
     ${keys.join(',\n    ')}
 ) values (
@@ -62,7 +18,7 @@ const insert = (table, obj) => {
 )`
 }
 
-const select = (obj) => {
+const select = (input) => {
   const ret = []
   const formatSelects = (obj, root = []) => {
     Object.entries(obj).forEach(([key, value]) => {
@@ -74,39 +30,41 @@ const select = (obj) => {
       if (type === 'string') {
         return ret.push(`${value} as '${keys.join('.')}'`)
       }
-      return ret.push(`${sanitizeValue(value)} as '${keys.join('.')}'`)
+      return ret.push(`${toValue(value)} as '${keys.join('.')}'`)
     })
   }
 
-  formatSelects(obj)
+  formatSelects(input)
 
-  console.log(ret)
-  
-  // const selects = Object.entries(obj).map(([key, value]) => {
-  //   if (typeof value === 'string') return `${value} as '${key}'`
-  //   if (typeof value === 'object') {
-  //     Object.entries(value)
-  //     return `${value} as '${key}'`
-  //   }
-  //   return `${value} as '${key}'`
-  // })
-  
   return `select
     ${ret.join(',\n    ')}
 `
 }
 
+const where = (input) => {
+  const wheres = Object.entries(input).map(([key, value]) => {
+    console.log()
+    return `${key} = ${value}`
+  })
+
+  return `where
+    ${wheres.join(',\n    ')}
+  `
+}
+
 const formatResult = (rows) => rows.map((row) => {
   const ret = {}
-  for(const [key, value] of Object.entries(row)) {
+  Object.entries(row).forEach(([key, value]) => {
     const keys = key.split('.')
     setKey(ret, keys, value)
-  }
+  })
   return ret
 })
 
 module.exports = {
   insert,
   select,
+  where,
   formatResult,
+  value: toValue,
 }

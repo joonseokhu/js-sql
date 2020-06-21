@@ -1,23 +1,5 @@
 const mysql = require('mysql2/promise')
-
-const { insert, select, formatResult } = require('./index')
-
-const test = (str) => {
-  console.log([...Array(30).keys()].map(e => '\n').join(''))
-  console.log(str)
-  return connection.query(str)
-  .then(([res]) => {
-    console.log('success')
-    const result = formatResult(res)
-    console.log(result)
-    return result
-  })
-  .catch(err => {
-    console.log('error')
-    console.log(err)
-    return []
-  })
-}
+const sql = require('./index')
 
 const connection = mysql.createPool({
   host: 'localhost',
@@ -26,21 +8,38 @@ const connection = mysql.createPool({
   password: 'TGkCpGQ37$HZxe',
 })
 
+const test = (str) => {
+  console.log([...Array(30).keys()].map((e) => '\n').join(''))
+  console.log(str)
+  return connection.query(str)
+    .then(([res]) => {
+      console.log('success')
+      const result = sql.formatResult(res)
+      console.log(result)
+      return result
+    })
+    .catch((err) => {
+      console.log('error')
+      console.log(err)
+      return []
+    })
+}
+
 // const foo = 'test5'
-// test(insert('user', {
+// test(sql.insert('user', {
 //   username: foo,
 //   password: '1234',
 //   email: `${foo}@test.com`,
 //   name: null
 // }))
 
-// test(insert('article', {
+// test(sql.insert('article', {
 //   user_id: 40,
 //   title: '제목8',
 //   content: '내용내용내용',
 // }))
 
-// test(`${select({
+// test(`${sql.select({
 //   'user.id': 'index',
 //   'user.username': 'id',
 //   'user.created_at': 'createdAt'
@@ -58,7 +57,7 @@ const connection = mysql.createPool({
 //   return ''
 // }))
 
-test(`${select({
+test(`${sql.select({
   id: 'article.id',
   title: 'article.title',
   content: 'article.content',
@@ -66,9 +65,13 @@ test(`${select({
   user: {
     id: 'user.id',
     username: 'user.username',
-    foo: undefined,
+    foo: sql.value.string('user.username'),
+    bar: sql.value.string('  \'  "  \\  '),
   },
 })}
 from article
 left join user on article.user_id = user.id
+${sql.where({
+    'user.id': 40,
+  })}
 `)
