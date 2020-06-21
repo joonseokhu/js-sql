@@ -11,11 +11,13 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'import/no-cycle': 'warn',
     'import/extensions': 'off',
-    'semi': 'off',
+    'semi': ['error', 'never', {
+      'beforeStatementContinuationChars': 'always',
+    }],
     'no-console': 'off',
     'max-len': 'warn',
     'no-underscore-dangle': 'off',
     'camelcase': 'off',
     'no-unused-vars': 'off',
   },
-};
+}

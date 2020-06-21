@@ -1,21 +1,18 @@
-const mysql = require('mysql2/promise')
-
-const { pipe } = require('./utils/pipe')
 const setKey = require('./utils/setKey')
 const toValue = require('./value')
 
 const insert = (table, input) => {
-  const keys = [];
-  const values = [];
+  const keys = []
+  const values = []
   Object.entries(input).forEach(([key, value]) => {
     keys.push(key)
     values.push(toValue(value))
   })
   return `insert into ${table} (
     ${keys.join(',\n    ')}
-) values (
+  ) values (
     ${values.join(',\n    ')}
-)`
+  )`
 }
 
 const select = (input) => {
@@ -23,7 +20,7 @@ const select = (input) => {
   const formatSelects = (obj, root = []) => {
     Object.entries(obj).forEach(([key, value]) => {
       const keys = [...root, key]
-      const type = typeof value;
+      const type = typeof value
       if (typeof value === 'object' && value !== null) {
         return formatSelects(value, keys)
       }
@@ -38,7 +35,7 @@ const select = (input) => {
 
   return `select
     ${ret.join(',\n    ')}
-`
+  `
 }
 
 const where = (input) => {

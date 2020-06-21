@@ -9,7 +9,7 @@ const connection = mysql.createPool({
 })
 
 const test = (str) => {
-  console.log([...Array(30).keys()].map((e) => '\n').join(''))
+  console.log('- - - - - - - - - - - - - - - - -\n')
   console.log(str)
   return connection.query(str)
     .then(([res]) => {

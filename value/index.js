@@ -1,4 +1,4 @@
-const { pipe } = require('../utils/pipe')
+const { pipe } = require('../utils/fp')
 
 const toString = pipe(
   (e) => String(e),
@@ -27,10 +27,10 @@ const toNumber = (value) => {
 const toValue = (value) => {
   if (value === null) return 'null'
   switch (typeof value) {
-    case 'string': return toString(value);
-    case 'boolean': return toBoolean(value);
-    case 'number': return toNumber(value);
-    case 'object': return toObject(value);
+    case 'string': return toString(value)
+    case 'boolean': return toBoolean(value)
+    case 'number': return toNumber(value)
+    case 'object': return toObject(value)
     default: return 'null'
   }
 }
