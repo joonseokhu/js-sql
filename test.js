@@ -25,19 +25,22 @@ const test = (str) => {
     })
 }
 
-// const foo = 'test5'
-// test(sql.insert('user', {
-//   username: foo,
-//   password: '1234',
-//   email: `${foo}@test.com`,
-//   name: null
-// }))
+// null, 타입에러, duplicate
 
-// test(sql.insert('article', {
-//   user_id: 40,
-//   title: '제목8',
-//   content: '내용내용내용',
-// }))
+const foo = 'test5'
+test(sql.insert('user', {
+  username: foo,
+  password: '1234',
+  email: `${foo}@test.com`,
+  name: null,
+  // phonenumber: sql.value.number(e),
+}))
+
+test(sql.insert('article', {
+  user_id: 40,
+  title: '제목8',
+  content: '내용내용내용',
+}))
 
 // test(`${sql.select({
 //   'user.id': 'index',
@@ -57,21 +60,21 @@ const test = (str) => {
 //   return ''
 // }))
 
-test(`${sql.select({
-  id: 'article.id',
-  title: 'article.title',
-  content: 'article.content',
-  article_user_id: 'article.user_id',
-  user: {
-    id: 'user.id',
-    username: 'user.username',
-    foo: sql.value.string('user.username'),
-    bar: sql.value.string('  \'  "  \\  '),
-  },
-})}
-from article
-left join user on article.user_id = user.id
-${sql.where({
-    'user.id': 40,
-  })}
-`)
+// test(`${sql.select({
+//   id: 'article.id',
+//   title: 'article.title',
+//   content: 'article.content',
+//   article_user_id: 'article.user_id',
+//   users: {
+//     id: 'user.id',
+//     username: 'user.username',
+//     foo: sql.value.string('user.username'),
+//     bar: sql.value.string('  \'  "  \\  '),
+//   },
+// })}
+// from article
+// left join user on article.user_id = user.id
+// ${sql.where({
+//     'user.id': 40,
+//   })}
+// `)
