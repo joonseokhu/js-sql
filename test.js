@@ -1,3 +1,4 @@
+const moment = require('moment-timezone')
 const mysql = require('mysql2/promise')
 const sql = require('./index')
 
@@ -28,18 +29,39 @@ const test = (str) => {
 // null, 타입에러, duplicate
 
 const foo = 'test5'
-test(sql.insert('user', {
-  username: foo,
-  password: '1234',
-  email: `${foo}@test.com`,
-  name: null,
-  // phonenumber: sql.value.number(e),
-}))
+// test(sql.insert('user', {
+//   username: foo,
+//   password: '1234',
+//   email: `${foo}@test.com`,
+//   name: null,
+//   // phonenumber: sql.value.number(e),
+// }))
+
+const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss')
+
+// const pool = sql.init({
+//   host: 'localhost',
+//   user: 'testdb',
+//   database: 'testdb',
+//   password: 'TGkCpGQ37$HZxe',
+// })
+
+// pool.insert('user', {
+//   username: 'test1',
+//   email: 'test01@test.com',
+//   password: '1234',
+// }, {
+//   email: 'test002@test.com',
+// })
+
+// pool.update
 
 test(sql.insert('article', {
   user_id: 40,
-  title: '제목8',
-  content: '내용내용내용',
+  title: `제목 ${now} " \" \\"  ' \'  \\'  \` \\\` ; \; >`, // 인젝션 테스트
+  content: `내용 ${now}`,
+}, {
+  title: 'ddd',
 }))
 
 // test(`${sql.select({

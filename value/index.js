@@ -6,7 +6,7 @@ const toString = pipe(
   (e) => e.replace(/'/g, '\\\''),
   (e) => e.replace(/"/g, '\\"'),
   (e) => e.replace(/`/g, '\\`'),
-  (e) => `'${e}'`,
+  (e) => `"${e}"`,
 )
 
 const toObject = (value) => ((value === null)

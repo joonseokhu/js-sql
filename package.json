@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.0",
+    "moment-timezone": "^0.5.31",
     "mysql2": "^2.1.0"
   },
   "devDependencies": {

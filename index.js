@@ -1,18 +1,88 @@
+const mysql = require('mysql2/promise')
+const chalk = require('chalk')
+
 const setKey = require('./utils/setKey')
 const toValue = require('./value')
 
-const insert = (table, input) => {
+const serializeString = (str) => str
+  .split('\n')
+  .map((e) => e.trim())
+  .join(' ')
+  .replace(/\s+/g, ' ')
+  .trim()
+
+const showQuery = (query) => {
+  console.log(`\n${chalk.cyan(serializeString(query))}\n`)
+}
+
+// const displayQuery = (query, values) => {
+//   const result = query
+//     .split('?')
+//     .map((queryStr, i, arr) => ((i + 1 === arr.length)
+//       ? queryStr
+//       : queryStr + toValue(values[i])))
+//     .join('')
+
+//   console.log(`\n${chalk.cyan(result)}\n`)
+
+//   return result
+// }
+
+// const Insert = (connection) => (table, input = {}, duplicates = {}) => {
+//   const keys = []
+//   const values = []
+//   const dupKeys = []
+
+//   Object.entries(input).forEach(([key, value]) => {
+//     keys.push(key)
+//     values.push(value)
+//   })
+
+//   Object.entries(duplicates).forEach(([key, value]) => {
+//     dupKeys.push(key)
+//     values.push(value)
+//   })
+
+//   const query = serializeString(`
+//     INSERT INTO ${table} (
+//       ${keys.join(', ')}
+//     ) VALUES (
+//       ${keys.map(() => '?').join(', ')}
+//     )
+//     ${dupKeys.length ? `
+//       ON DUPLICATE KEY UPDATE
+//       ${dupKeys.map((key) => (`${key} = ?`)).join(', ')}
+//     ` : ''}
+//   `)
+
+//   displayQuery(query, values)
+
+//   return connection.query(query, values)
+// }
+
+const insert = (table, input, duplicates) => {
   const keys = []
   const values = []
   Object.entries(input).forEach(([key, value]) => {
     keys.push(key)
     values.push(toValue(value))
   })
-  return `insert into ${table} (
+  const dups = Object.entries(duplicates)
+  const query = serializeString(`INSERT INTO ${table} (
     ${keys.join(',\n    ')}
-  ) values (
+  ) VALUES (
     ${values.join(',\n    ')}
-  )`
+  )
+  ${dups.length ? `
+    ON DUPLICATE KEY UPDATE
+    ${dups.map(([key, value]) => (
+    `${key} = ${toValue(value)}`
+  ))}
+  ` : ''}`)
+
+  showQuery(query)
+
+  return query
 }
 
 const select = (input) => {
@@ -58,7 +128,18 @@ const formatResult = (rows) => rows.map((row) => {
   return ret
 })
 
+// const init = (connectionInfo) => {
+//   const pool = mysql.createPool(connectionInfo)
+
+//   const insert = Insert(pool)
+
+//   return Object.assign(pool, {
+//     insert,
+//   })
+// }
+
 module.exports = {
+  // init,
   insert,
   select,
   where,
