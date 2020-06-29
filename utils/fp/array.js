@@ -1,4 +1,4 @@
-const populate = (length) => {
+const create = (length) => {
   const len = Number(length)
   if (Number.isNaN(len)) return []
   return [...Array(len).keys()]
@@ -18,7 +18,7 @@ const sort = (fn) => (arr) => [...arr].sort(fn)
 
 const reverse = (flag) => (arr) => (flag ? [...arr].reverse() : arr)
 
-const getShuffledArr = () => (arr) => {
+const shuffle = () => (arr) => {
   const newArr = arr.slice()
   for (let i = newArr.length - 1; i > 0; i -= 1) {
     const rand = Math.floor(Math.random() * (i + 1));
@@ -28,7 +28,7 @@ const getShuffledArr = () => (arr) => {
 }
 
 module.exports = {
-  populate,
+  create,
   map,
   filter,
   slice,
@@ -36,5 +36,5 @@ module.exports = {
   reduce,
   sort,
   reverse,
-  getShuffledArr,
+  shuffle,
 }

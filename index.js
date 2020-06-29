@@ -1,64 +1,24 @@
-const mysql = require('mysql2/promise')
 const chalk = require('chalk')
 
 const setKey = require('./utils/setKey')
 const toValue = require('./value')
 
+const joinLines = (strs) => strs.join(',\n   ')
+
+// eslint-disable-next-line arrow-body-style
 const serializeString = (str) => str
   .split('\n')
   .map((e) => e.trim())
-  .join(' ')
-  .replace(/\s+/g, ' ')
-  .trim()
+  .join('\n')
+// .join(' ')
+// .replace(/\s+/g, ' ')
+// .trim()
 
+// eslint-disable-next-line arrow-body-style
 const showQuery = (query) => {
-  console.log(`\n${chalk.cyan(serializeString(query))}\n`)
+  // console.log(`${chalk.cyan(serializeString(query))}`)
+  return query
 }
-
-// const displayQuery = (query, values) => {
-//   const result = query
-//     .split('?')
-//     .map((queryStr, i, arr) => ((i + 1 === arr.length)
-//       ? queryStr
-//       : queryStr + toValue(values[i])))
-//     .join('')
-
-//   console.log(`\n${chalk.cyan(result)}\n`)
-
-//   return result
-// }
-
-// const Insert = (connection) => (table, input = {}, duplicates = {}) => {
-//   const keys = []
-//   const values = []
-//   const dupKeys = []
-
-//   Object.entries(input).forEach(([key, value]) => {
-//     keys.push(key)
-//     values.push(value)
-//   })
-
-//   Object.entries(duplicates).forEach(([key, value]) => {
-//     dupKeys.push(key)
-//     values.push(value)
-//   })
-
-//   const query = serializeString(`
-//     INSERT INTO ${table} (
-//       ${keys.join(', ')}
-//     ) VALUES (
-//       ${keys.map(() => '?').join(', ')}
-//     )
-//     ${dupKeys.length ? `
-//       ON DUPLICATE KEY UPDATE
-//       ${dupKeys.map((key) => (`${key} = ?`)).join(', ')}
-//     ` : ''}
-//   `)
-
-//   displayQuery(query, values)
-
-//   return connection.query(query, values)
-// }
 
 const insert = (table, input, duplicates) => {
   const keys = []
@@ -68,10 +28,11 @@ const insert = (table, input, duplicates) => {
     values.push(toValue(value))
   })
   const dups = Object.entries(duplicates)
-  const query = serializeString(`INSERT INTO ${table} (
-    ${keys.join(',\n    ')}
+  const query = serializeString(`
+  INSERT INTO ${table} (
+    ${joinLines(keys)}
   ) VALUES (
-    ${values.join(',\n    ')}
+    ${joinLines(values)}
   )
   ${dups.length ? `
     ON DUPLICATE KEY UPDATE
@@ -80,9 +41,19 @@ const insert = (table, input, duplicates) => {
   ))}
   ` : ''}`)
 
-  showQuery(query)
+  return showQuery(query)
+}
 
-  return query
+const update = (table, input) => {
+  const pairs = Object.entries(input).map(([key, value]) => (
+    `${key} = ${toValue(value)}`
+  ))
+  const query = serializeString(`
+  UPDATE ${table} SET
+    ${joinLines(pairs)}
+  `)
+
+  return showQuery(query)
 }
 
 const select = (input) => {
@@ -103,9 +74,12 @@ const select = (input) => {
 
   formatSelects(input)
 
-  return `select
-    ${ret.join(',\n    ')}
-  `
+  const query = serializeString(`
+  SELECT
+    ${joinLines(ret)}
+  `)
+
+  return showQuery(query)
 }
 
 const where = (input) => {
@@ -114,12 +88,15 @@ const where = (input) => {
     return `${key} = ${value}`
   })
 
-  return `where
-    ${wheres.join(',\n    ')}
-  `
+  const query = serializeString(`
+  WHERE
+    ${joinLines(wheres)}
+  `)
+
+  return showQuery(query)
 }
 
-const formatResult = (rows) => rows.map((row) => {
+const formatSelected = (rows) => rows.map((row) => {
   const ret = {}
   Object.entries(row).forEach(([key, value]) => {
     const keys = key.split('.')
@@ -141,8 +118,9 @@ const formatResult = (rows) => rows.map((row) => {
 module.exports = {
   // init,
   insert,
+  update,
   select,
   where,
-  formatResult,
+  formatSelected,
   value: toValue,
 }

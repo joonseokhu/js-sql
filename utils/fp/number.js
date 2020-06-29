@@ -1,11 +1,11 @@
-const getRandomInt = (left = 0, right = 0) => {
+const random = (left = 0, right = 0) => {
   const [from, to] = [left, right].sort((a, b) => a - b)
   const min = Math.ceil(from)
   const max = Math.floor(to)
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-const cutOffNumber = (position = 0, method = 'round') => (value = 0) => {
+const cutOff = (position = 0, method = 'round') => (value = 0) => {
   if (!['ceil', 'round', 'floor'].includes(method)) {
     throw new Error('Method is not a number fixer `ceil`, `round`, `floor`')
   }
@@ -25,6 +25,6 @@ const cutOffNumber = (position = 0, method = 'round') => (value = 0) => {
 }
 
 module.exports = {
-  getRandomInt,
-  cutOffNumber,
+  random,
+  cutOff,
 }

@@ -9,13 +9,14 @@ const connection = mysql.createPool({
   password: 'TGkCpGQ37$HZxe',
 })
 
+// eslint-disable-next-line arrow-body-style
 const test = (str) => {
-  console.log('- - - - - - - - - - - - - - - - -\n')
+  // console.log('- - - - - - - - - - - - - - - - -\n')
   console.log(str)
   return connection.query(str)
     .then(([res]) => {
       console.log('success')
-      const result = sql.formatResult(res)
+      const result = sql.formatSelected(res)
       console.log(result)
       return result
     })
@@ -56,13 +57,13 @@ const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss')
 
 // pool.update
 
-test(sql.insert('article', {
-  user_id: 40,
-  title: `제목 ${now} " \" \\"  ' \'  \\'  \` \\\` ; \; >`, // 인젝션 테스트
-  content: `내용 ${now}`,
-}, {
-  title: 'ddd',
-}))
+// test(sql.insert('article', {
+//   user_id: 40,
+//   title: `제목 ${now} " \" \\"  ' \'  \\'  \` \\\` ; \; >`, // 인젝션 테스트
+//   content: `내용 ${now}`,
+// }, {
+//   title: 'ddd',
+// }))
 
 // test(`${sql.select({
 //   'user.id': 'index',
@@ -82,21 +83,22 @@ test(sql.insert('article', {
 //   return ''
 // }))
 
-// test(`${sql.select({
-//   id: 'article.id',
-//   title: 'article.title',
-//   content: 'article.content',
-//   article_user_id: 'article.user_id',
-//   users: {
-//     id: 'user.id',
-//     username: 'user.username',
-//     foo: sql.value.string('user.username'),
-//     bar: sql.value.string('  \'  "  \\  '),
-//   },
-// })}
-// from article
-// left join user on article.user_id = user.id
-// ${sql.where({
-//     'user.id': 40,
-//   })}
-// `)
+test(`${sql.select({
+  id: 'article.id',
+  title: 'article.title',
+  content: 'article.content',
+  article_user_id: 'article.user_id',
+  users: {
+    id: 'user.id',
+    username: 'user.username',
+    foo: sql.value.string('user.username'),
+    bar: sql.value.string('  \'  "  \\  '),
+  },
+})}
+from article
+left join user on article.user_id = user.id
+${sql.where({
+    'user.id': 40,
+  })}
+  LIMIT 4
+`)
