@@ -20,7 +20,7 @@ const showQuery = (query) => {
   return query
 }
 
-const insert = (table, input, duplicates) => {
+const insert = (table = '', input = {}, duplicates = {}) => {
   const keys = []
   const values = []
   Object.entries(input).forEach(([key, value]) => {
@@ -44,7 +44,7 @@ const insert = (table, input, duplicates) => {
   return showQuery(query)
 }
 
-const update = (table, input) => {
+const update = (table = '', input = {}) => {
   const pairs = Object.entries(input).map(([key, value]) => (
     `${key} = ${toValue(value)}`
   ))
@@ -56,7 +56,7 @@ const update = (table, input) => {
   return showQuery(query)
 }
 
-const select = (input) => {
+const select = (input = {}) => {
   const ret = []
   const formatSelects = (obj, root = []) => {
     Object.entries(obj).forEach(([key, value]) => {

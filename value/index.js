@@ -14,7 +14,7 @@ const toObject = (value) => ((value === null)
   : pipe(
     (e) => JSON.stringify(e),
     toString,
-  ))
+  )(value))
 
 const toBoolean = (value) => (value ? 'true' : 'false')
 
