@@ -27,9 +27,67 @@ const test = (str) => {
     })
 }
 
+console.log(`
+  ${sql.insert('foo', [
+    {
+      foo: '1',
+      bar: 0,
+      baz: null,
+    }, {
+      foo: '2',
+      bar: 0,
+      baz: null,
+    }, {
+      foo: '3sd',
+      bar: 0,
+      baz: null,
+    }, {
+      foo: '145',
+      bar: 110,
+      baz: null,
+    }, {
+      foo: '15fdsa',
+      bar: 302,
+      baz: null,
+    }, {
+      foo: 'sdfsa1',
+      bar: 1100,
+      baz: null,
+    },
+  ])}
+`)
+
+console.log(`
+  ${sql.insert('foo', {
+    foo: '1',
+    bar: 0,
+    baz: null,
+  }, {
+    foo: '2',
+    bar: 0,
+    baz: null,
+  }, {
+    foo: '3sd',
+    bar: 0,
+    baz: null,
+  }, {
+    foo: '145',
+    bar: 110,
+    baz: null,
+  }, {
+    foo: '15fdsa',
+    bar: 302,
+    baz: null,
+  }, {
+    foo: 'sdfsa1',
+    bar: 1100,
+    baz: null,
+  })}
+`)
+
 // null, 타입에러, duplicate
 
-const foo = 'test5'
+// const foo = 'test5'
 // test(sql.insert('user', {
 //   username: foo,
 //   password: '1234',
@@ -38,7 +96,7 @@ const foo = 'test5'
 //   // phonenumber: sql.value.number(e),
 // }))
 
-const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss')
+// const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss')
 
 // const pool = sql.init({
 //   host: 'localhost',
@@ -83,22 +141,22 @@ const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss')
 //   return ''
 // }))
 
-test(`${sql.select({
-  id: 'article.id',
-  title: 'article.title',
-  content: 'article.content',
-  article_user_id: 'article.user_id',
-  users: {
-    id: 'user.id',
-    username: 'user.username',
-    foo: sql.value.string('user.username'),
-    bar: sql.value.string('  \'  "  \\  '),
-  },
-})}
-from article
-left join user on article.user_id = user.id
-${sql.where({
-    'user.id': 40,
-  })}
-  LIMIT 4
-`)
+// test(`${sql.select({
+//   id: 'article.id',
+//   title: 'article.title',
+//   content: 'article.content',
+//   article_user_id: 'article.user_id',
+//   users: {
+//     id: 'user.id',
+//     username: 'user.username',
+//     foo: sql.value.string('user.username'),
+//     bar: sql.value.string('  \'  "  \\  '),
+//   },
+// })}
+// from article
+// left join user on article.user_id = user.id
+// ${sql.where({
+//     'user.id': 40,
+//   })}
+//   LIMIT 4
+// `)

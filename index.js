@@ -20,25 +20,29 @@ const showQuery = (query) => {
   return query
 }
 
+const joinInserts = (els = []) => `(\n${els.join(',\n')}\n)`
+
+const insertValues = (inputs = []) => (
+  inputs.map((input = {}) => joinInserts(
+    Object.values(input).map((value) => toValue(value)),
+  )).join(',')
+)
+
+const insertKeys = (inputs = {}) => joinInserts(Object.keys(inputs[0]))
+
 const insert = (table = '', input = {}, duplicates = {}) => {
-  const keys = []
-  const values = []
-  Object.entries(input).forEach(([key, value]) => {
-    keys.push(key)
-    values.push(toValue(value))
-  })
+  const inputs = Array.isArray(input) ? input : [input]
+
   const dups = Object.entries(duplicates)
+    .map(([key, value]) => (
+      `${key} = ${toValue(value)}`
+    ))
+
   const query = serializeString(`
-  INSERT INTO ${table} (
-    ${joinLines(keys)}
-  ) VALUES (
-    ${joinLines(values)}
-  )
+  INSERT INTO ${table} ${insertKeys(inputs)} VALUES ${insertValues(inputs)}
   ${dups.length ? `
     ON DUPLICATE KEY UPDATE
-    ${dups.map(([key, value]) => (
-    `${key} = ${toValue(value)}`
-  ))}
+    ${joinLines(dups)}
   ` : ''}`)
 
   return showQuery(query)

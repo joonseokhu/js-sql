@@ -1,3 +1,5 @@
+const moment = require('moment-timezone')
+
 const { pipe } = require('../utils/fp')
 
 const toString = pipe(
@@ -35,9 +37,12 @@ const toValue = (value) => {
   }
 }
 
+const toDate = (value) => moment(value).format('YYYY-MM-DD HH:mm:ss')
+
 module.exports = Object.assign(toValue, {
   string: toString,
   object: toObject,
   boolean: toBoolean,
   number: toNumber,
+  date: toDate,
 })
