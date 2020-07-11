@@ -24,7 +24,7 @@ const joinInserts = (els = []) => `(\n${els.join(',\n')}\n)`
 
 const insertValues = (inputs = []) => (
   inputs.map((input = {}) => joinInserts(
-    Object.values(input).map((value) => toValue(value)),
+    Object.values(input),
   )).join(',')
 )
 
@@ -35,7 +35,7 @@ const insert = (table = '', input = {}, duplicates = {}) => {
 
   const dups = Object.entries(duplicates)
     .map(([key, value]) => (
-      `${key} = ${toValue(value)}`
+      `${key} = ${value}`
     ))
 
   const query = serializeString(`
@@ -50,7 +50,7 @@ const insert = (table = '', input = {}, duplicates = {}) => {
 
 const update = (table = '', input = {}) => {
   const pairs = Object.entries(input).map(([key, value]) => (
-    `${key} = ${toValue(value)}`
+    `${key} = ${value}`
   ))
   const query = serializeString(`
   UPDATE ${table} SET
@@ -72,7 +72,7 @@ const select = (input = {}) => {
       if (type === 'string') {
         return ret.push(`${value} as '${keys.join('.')}'`)
       }
-      return ret.push(`${toValue(value)} as '${keys.join('.')}'`)
+      return ret.push(`${value} as '${keys.join('.')}'`)
     })
   }
 

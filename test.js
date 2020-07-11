@@ -16,9 +16,10 @@ const test = (str) => {
   return connection.query(str)
     .then(([res]) => {
       console.log('success')
-      const result = sql.formatSelected(res)
-      console.log(result)
-      return result
+      console.log(res)
+      // const result = sql.formatSelected(res)
+      // console.log(result)
+      // return result
     })
     .catch((err) => {
       console.log('error')
@@ -27,63 +28,54 @@ const test = (str) => {
     })
 }
 
-console.log(`
-  ${sql.insert('foo', [
+test(`
+  ${sql.insert('article', [
     {
-      foo: '1',
-      bar: 0,
-      baz: null,
+      title: '1',
+      user_id: 0,
+      content: null,
+      created_at: '2018-05-05',
     }, {
-      foo: '2',
-      bar: 0,
-      baz: null,
+      title: '2',
+      user_id: 0,
+      content: null,
+      created_at: '2018-05-05',
     }, {
-      foo: '3sd',
-      bar: 0,
-      baz: null,
+      title: '3sd',
+      user_id: 0,
+      content: null,
+      created_at: '2018-05-05',
     }, {
-      foo: '145',
-      bar: 110,
-      baz: null,
+      title: '145',
+      user_id: 110,
+      content: null,
+      created_at: '2018-05-05',
     }, {
-      foo: '15fdsa',
-      bar: 302,
-      baz: null,
+      title: '15fdsa',
+      user_id: sql.value.number('-234,12,45.435'),
+      content: null,
+      created_at: '2018-05-05',
     }, {
-      foo: 'sdfsa1',
-      bar: 1100,
-      baz: null,
+      title: 'sdfsa1',
+      user_id: 1100,
+      content: null,
+      created_at: '2018-05-05',
     },
-  ])}
+  ].map((e) => ({
+    title: sql.value.string(e.title),
+    user_id: sql.value.number(e.user_id),
+    content: sql.value.string(e.content),
+    created_at: sql.value.date(e.created_at),
+  })))}
 `)
 
-console.log(`
-  ${sql.insert('foo', {
-    foo: '1',
-    bar: 0,
-    baz: null,
-  }, {
-    foo: '2',
-    bar: 0,
-    baz: null,
-  }, {
-    foo: '3sd',
-    bar: 0,
-    baz: null,
-  }, {
-    foo: '145',
-    bar: 110,
-    baz: null,
-  }, {
-    foo: '15fdsa',
-    bar: 302,
-    baz: null,
-  }, {
-    foo: 'sdfsa1',
-    bar: 1100,
-    baz: null,
-  })}
-`)
+// test(`
+//   ${sql.insert('foo', {
+//     foo: '1',
+//     bar: 0,
+//     baz: null,
+//   })}
+// `)
 
 // null, 타입에러, duplicate
 

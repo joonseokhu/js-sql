@@ -2,29 +2,34 @@ const moment = require('moment-timezone')
 
 const { pipe } = require('../utils/fp')
 
-const toString = pipe(
+const isVoid = (value) => (value === null || value === undefined)
+
+const ToValue = (format) => (value, defaultValue = null) => {
+  if (isVoid(value)) return isVoid(defaultValue) ? 'null' : format(defaultValue)
+  return format(value)
+}
+
+const toString = ToValue(pipe(
   (e) => String(e),
   (e) => e.replace(/\\/g, '\\\\'),
   (e) => e.replace(/'/g, '\\\''),
   (e) => e.replace(/"/g, '\\"'),
   (e) => e.replace(/`/g, '\\`'),
   (e) => `"${e}"`,
-)
+))
 
-const toObject = (value) => ((value === null)
-  ? 'null'
-  : pipe(
-    (e) => JSON.stringify(e),
-    toString,
-  )(value))
+const toBoolean = ToValue((e) => !!e)
 
-const toBoolean = (value) => (value ? 'true' : 'false')
+const toNumber = ToValue(pipe(
+  String,
+  (e) => e.replace(/[^\d.-]/g, ''),
+  Number,
+))
 
-const toNumber = (value) => {
-  const num = Number(value)
-  if (Number.isNaN(num)) return '0'
-  return num.toString()
-}
+const toDate = ToValue(pipe(
+  (e) => moment(e).format('YYYY-MM-DD HH:mm:ss'),
+  toString,
+))
 
 const toValue = (value) => {
   if (value === null) return 'null'
@@ -32,16 +37,12 @@ const toValue = (value) => {
     case 'string': return toString(value)
     case 'boolean': return toBoolean(value)
     case 'number': return toNumber(value)
-    case 'object': return toObject(value)
     default: return 'null'
   }
 }
 
-const toDate = (value) => moment(value).format('YYYY-MM-DD HH:mm:ss')
-
 module.exports = Object.assign(toValue, {
   string: toString,
-  object: toObject,
   boolean: toBoolean,
   number: toNumber,
   date: toDate,
