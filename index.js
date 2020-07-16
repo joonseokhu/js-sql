@@ -127,4 +127,5 @@ module.exports = {
   where,
   formatSelected,
   value: toValue,
+  ...toValue,
 }

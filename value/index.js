@@ -4,9 +4,18 @@ const { pipe } = require('../utils/fp')
 
 const isVoid = (value) => (value === null || value === undefined)
 
-const ToValue = (format) => (value, defaultValue = null) => {
-  if (isVoid(value)) return isVoid(defaultValue) ? 'null' : format(defaultValue)
-  return format(value)
+// const ToValue = (format) => (value, defaultValue = null) => {
+//   if (isVoid(value)) return isVoid(defaultValue) ? 'null' : format(defaultValue)
+//   return format(value)
+// }
+
+const ToValue = (format, option) => (value, defaultValue = null, mutate) => {
+  if (isVoid(value) && isVoid(defaultValue)) return 'null'
+  return pipe(
+    (v) => (isVoid(v) ? defaultValue : v),
+    (v) => (mutate ? mutate(v) : v),
+    (v) => format(v, option),
+  )(value)
 }
 
 const toString = ToValue(pipe(
